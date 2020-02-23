@@ -1,0 +1,8 @@
+version: "3.3"
+
+services:
+  client-certs:
+    build: .
+    container_name: "Client-Cert-CA"
+    volumes:
+      - ./certs:/certs

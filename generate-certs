@@ -1,27 +1,29 @@
 #!/bin/bash
 
 echo "----------------------------"
-echo "| SSL Cert Generator |"
+echo "| SSL Client Cert Generator |"
 echo "----------------------------"
 echo
 
 export CA_KEY=${CA_KEY-"ca-key.pem"}
-export CA_CERT=${CA_CERT-"ca.pem"}
+export CA_CERT_PEM=${CA_CERT_PEM-"ca.pem"}
+export CA_CERT_CRT=${CA_CERT_CRT-"ca.crt"}
+export CA_CRT_FORMAT=${CA_CRT_FORMAT-"pem"}
 export CA_SUBJECT=${CA_SUBJECT:-"test-ca"}
 export CA_EXPIRE=${CA_EXPIRE:-"60"}
 
 export SSL_CONFIG=${SSL_CONFIG:-"openssl.cnf"}
-export SSL_KEY=${SSL_KEY:-"key.pem"}
-export SSL_CSR=${SSL_CSR:-"key.csr"}
-export SSL_CERT=${SSL_CERT:-"cert.pem"}
-export SSL_SIZE=${SSL_SIZE:-"2048"}
-export SSL_EXPIRE=${SSL_EXPIRE:-"60"}
+export CLIENT_KEY=${CLIENT_KEY:-"client-key.pem"}
+export CLIENT_CSR=${CLIENT_CSR:-"client-csr.csr"}
+export CLIENT_CERT=${CLIENT_CERT:-"client-cert.pem"}
+export CLIENT_P12=${CLIENT_P12:-"client-cert.p12"}
+export CLIENT_KEY_SIZE=${CLIENT_KEY_SIZE:-"2048"}
+export CLIENT_EXPIRE=${CLIENT_EXPIRE:-"60"}
+export CLIENT_PASSWD=${CLIENT_PASSWD:-"password"}
 
-export SSL_SUBJECT=${SSL_SUBJECT:-"example.com"}
-export SSL_DNS=${SSL_DNS}
-export SSL_IP=${SSL_IP}
-
-export DEBUG=${DEBUG:=1}
+export CLIENT_SUBJECT=${CLIENT_SUBJECT:-"example.com"}
+export CLIENT_DNS=${CLIENT_DNS}
+export CLIENT_IP=${CLIENT_IP}
 
 echo "--> Certificate Authority"
 
@@ -32,14 +34,12 @@ else
     openssl genrsa -out ${CA_KEY} 2048
 fi
 
-if [[ -e ./${CA_CERT} ]]; then
-    echo "====> Using existing CA Certificate ${CA_CERT}"
+if [[ -e ./${CA_CERT_PEM} ]]; then
+    echo "====> Using existing CA Certificate ${CA_CERT_PEM}"
 else
-    echo "====> Generating new CA Certificate ${CA_CERT}"
-    openssl req -x509 -new -nodes -key ${CA_KEY} -days ${CA_EXPIRE} -out ${CA_CERT} -subj "/CN=${CA_SUBJECT}"  || exit 1
+    echo "====> Generating new CA Certificate ${CA_CERT_PEM}"
+    openssl req -x509 -new -nodes -key ${CA_KEY} -days ${CA_EXPIRE} -out ${CA_CERT_PEM} -subj "/CN=${CA_SUBJECT}"  || exit 1
 fi
-
-[[ -n $DEBUG ]] && cat $CA_CERT
 
 echo "====> Generating new config file ${SSL_CONFIG}"
 cat > ${SSL_CONFIG} <<EOM
@@ -53,49 +53,42 @@ keyUsage = nonRepudiation, digitalSignature, keyEncipherment
 extendedKeyUsage = clientAuth, serverAuth
 EOM
 
-if [[ -n ${SSL_DNS} || -n ${SSL_IP} ]]; then
+if [[ -n ${CLIENT_DNS} || -n ${CLIENT_IP} ]]; then
     cat >> ${SSL_CONFIG} <<EOM
 subjectAltName = @alt_names
 [alt_names]
 EOM
 
     IFS=","
-    dns=(${SSL_DNS})
-    dns+=(${SSL_SUBJECT})
+    dns=(${CLIENT_DNS})
+    dns+=(${CLIENT_SUBJECT})
     for i in "${!dns[@]}"; do
       echo DNS.$((i+1)) = ${dns[$i]} >> ${SSL_CONFIG}
     done
 
-    if [[ -n ${SSL_IP} ]]; then
-        ip=(${SSL_IP})
+    if [[ -n ${CLIENT_IP} ]]; then
+        ip=(${CLIENT_IP})
         for i in "${!ip[@]}"; do
           echo IP.$((i+1)) = ${ip[$i]} >> ${SSL_CONFIG}
         done
     fi
 fi
 
-echo "====> Generating new SSL KEY ${SSL_KEY}"
-openssl genrsa -out ${SSL_KEY} ${SSL_SIZE}  || exit 1
+echo "====> Generating new client SSL KEY ${CLIENT_KEY}"
+openssl genrsa -out ${CLIENT_KEY} ${CLIENT_KEY_SIZE}  || exit 1
 
-echo "====> Generating new SSL CSR ${SSL_CSR}"
-openssl req -new -key ${SSL_KEY} -out ${SSL_CSR} -subj "/CN=${SSL_SUBJECT}" -config ${SSL_CONFIG}  || exit 1
+echo "====> Generating new client SSL CSR ${CLIENT_CSR}"
+openssl req -new -key ${CLIENT_KEY} -out ${CLIENT_CSR} -subj "/CN=${CLIENT_SUBJECT}" -config ${SSL_CONFIG}  || exit 1
 
-echo "====> Generating new SSL CERT ${SSL_CERT}"
-openssl x509 -req -in ${SSL_CSR} -CA ${CA_CERT} -CAkey ${CA_KEY} -CAcreateserial -out ${SSL_CERT} \
-    -days ${SSL_EXPIRE} -extensions v3_req -extfile ${SSL_CONFIG}  || exit 1
+echo "====> Generating new client SSL CERT ${CLIENT_CERT}"
+openssl x509 -req -in ${CLIENT_CSR} -CA ${CA_CERT_PEM} -CAkey ${CA_KEY} -CAcreateserial -out ${CLIENT_CERT} \
+    -days ${CLIENT_EXPIRE} -extensions v3_req -extfile ${SSL_CONFIG}  || exit 1
 
-echo -n
-echo -n
-echo "***** CA CERT"
-cat $CA_CERT
-echo -n
-echo -n
-echo "***** SSL_KEY"
-cat $SSL_KEY
-echo -n
-echo -n
-echo "***** SSL CERT"
-cat $SSL_CERT
-echo -n
-echo -n
+echo "====> Exporting client SSL P12 ${CLIENT_P12}"
+openssl pkcs12 -export -in ${CLIENT_CERT} -inkey ${CLIENT_KEY} -out ${CLIENT_P12} -password pass:${CLIENT_PASSWD} > /dev/null || exit 1
 
+echo
+echo "----------------------------"
+echo "|         Finished!        |"
+echo "----------------------------"
+echo
