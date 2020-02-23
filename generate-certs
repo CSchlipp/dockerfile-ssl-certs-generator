@@ -40,6 +40,9 @@ if [[ -e ./${CA_CERT_PEM} ]]; then
 else
     echo "====> Generating new CA Certificate ${CA_CERT_PEM}"
     openssl req -x509 -new -nodes -key ${CA_KEY} -days ${CA_EXPIRE} -out ${CA_CERT_PEM} -subj "/CN=${CA_SUBJECT}"  || exit 1
+    if ! [[ -e ./${CA_CERT_CRT} ]]; then
+      openssl x509 -outform ${CA_CRT_FORMAT} -in ${CA_CERT_PEM} -out ${CA_CERT_CRT} > /dev/null  || exit 1
+    fi
 fi
 
 echo "====> Generating new config file ${SSL_CONFIG}"
