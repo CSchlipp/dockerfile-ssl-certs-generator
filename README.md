@@ -5,8 +5,9 @@ About
 -----
 Origin: https://github.com/stakater/dockerfile-ssl-certs-generator
 
-This is a small docker image based off `alpine linux` which allows you to create one or multiple client certificates for mutual TLS authentication.
+This is a small docker image based on `alpine linux` which allows you to create one or multiple client certificates for mutual TLS authentication.
 
+Default settings are suitable for usage with [Traefik](https://containo.us/traefik/). 
 ```
 $ docker run -v /tmp/certs:/certs cschlipp/client-cert-ca:latest
 ----------------------------
@@ -72,7 +73,7 @@ __[2] If `CLIENT_DNS` or `CLIENT_IP` is set will add `CLIENT_SUBJECT` to alterna
 
 Usage with Traefik
 --------------
-The following traefik config in TOML format enforces a client cert issues by ca.crt for all TLS endpoints.
+The following Traefik config in TOML format enforces [mutual TLS Authentication](https://docs.traefik.io/v2.1/https/tls/#client-authentication-mtls) with a client cert issued by ca.crt for all TLS endpoints.
 ```
 [tls]
   [tls.options]
