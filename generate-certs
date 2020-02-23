@@ -6,6 +6,7 @@ echo "----------------------------"
 echo
 
 export CA_KEY=${CA_KEY-"ca-key.pem"}
+export CA_KEY_SIZE=${CA_KEY_SIZE:-"8192"}
 export CA_CERT_PEM=${CA_CERT_PEM-"ca.pem"}
 export CA_CERT_CRT=${CA_CERT_CRT-"ca.crt"}
 export CA_CRT_FORMAT=${CA_CRT_FORMAT-"pem"}
@@ -31,7 +32,7 @@ if [[ -e ./${CA_KEY} ]]; then
     echo "====> Using existing CA Key ${CA_KEY}"
 else
     echo "====> Generating new CA key ${CA_KEY}"
-    openssl genrsa -out ${CA_KEY} 2048
+    openssl genrsa -out ${CA_KEY} ${CA_KEY_SIZE}
 fi
 
 if [[ -e ./${CA_CERT_PEM} ]]; then

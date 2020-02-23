@@ -1,4 +1,4 @@
-Self Signed SSL Certificate Generator
+Self Signed SSL Client Certificate Generator
 =================================================
 
 About
@@ -13,18 +13,18 @@ $ docker run -v /tmp/certs:/certs cschlipp/client-cert-ca:latest
 | SSL Client Cert Generator |
 ----------------------------
 
--> Certificate Authority
+--> Certificate Authority
 ====> Generating new CA key ca-key.pem
-Generating RSA private key, 2048 bit long modulus
-.............................+++++
-........................................+++++
+Generating RSA private key, 8192 bit long modulus
+.........................................................................................................................................................................................................................................................................+++
+..........+++
 e is 65537 (0x10001)
 ====> Generating new CA Certificate ca.pem
 ====> Generating new config file openssl.cnf
 ====> Generating new client SSL KEY client-key.pem
 Generating RSA private key, 4096 bit long modulus
-............................................................................................................++++
-.................................................................................................................++++
+.......................................................................................................................................................................................++++
+...........................................................................++++
 e is 65537 (0x10001)
 ====> Generating new client SSL CSR client-csr.csr
 ====> Generating new client SSL CERT client-cert.pem
@@ -48,6 +48,7 @@ Advanced Usage
 Customize the certs using the following Environment Variables:
 
 * `CA_KEY` CA Key file, default `ca-key.pem` __[1]__
+* `CA_KEY_SIZE` CA Key size, default `8192‬` __[1]__
 * `CA_CERT_PEM` CA Certificate as .pem file, default `ca.pem` __[1]__
 * `CA_CERT_CRT` CA Certificate as .crt file, default `ca.crt` __[1]__ 
 * `CA_CRT_FORMAT` Certificate format used for CA .crt export, default `pem`
