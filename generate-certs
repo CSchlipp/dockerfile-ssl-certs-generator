@@ -9,16 +9,16 @@ export CA_KEY=${CA_KEY-"ca-key.pem"}
 export CA_CERT_PEM=${CA_CERT_PEM-"ca.pem"}
 export CA_CERT_CRT=${CA_CERT_CRT-"ca.crt"}
 export CA_CRT_FORMAT=${CA_CRT_FORMAT-"pem"}
-export CA_SUBJECT=${CA_SUBJECT:-"test-ca"}
-export CA_EXPIRE=${CA_EXPIRE:-"60"}
+export CA_SUBJECT=${CA_SUBJECT:-"client-auth-ca"}
+export CA_EXPIRE=${CA_EXPIRE:-"1825"}
 
 export SSL_CONFIG=${SSL_CONFIG:-"openssl.cnf"}
 export CLIENT_KEY=${CLIENT_KEY:-"client-key.pem"}
 export CLIENT_CSR=${CLIENT_CSR:-"client-csr.csr"}
 export CLIENT_CERT=${CLIENT_CERT:-"client-cert.pem"}
 export CLIENT_P12=${CLIENT_P12:-"client-cert.p12"}
-export CLIENT_KEY_SIZE=${CLIENT_KEY_SIZE:-"2048"}
-export CLIENT_EXPIRE=${CLIENT_EXPIRE:-"60"}
+export CLIENT_KEY_SIZE=${CLIENT_KEY_SIZE:-"4096"}
+export CLIENT_EXPIRE=${CLIENT_EXPIRE:-"365"}
 export CLIENT_PASSWD=${CLIENT_PASSWD:-"password"}
 
 export CLIENT_SUBJECT=${CLIENT_SUBJECT:-"example.com"}
