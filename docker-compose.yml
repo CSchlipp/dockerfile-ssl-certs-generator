@@ -8,7 +8,7 @@ services:
       - ./certs:/certs
     restart: "no"
     network_mode: "none"
-      #environment:
+    #environment:
       #- "CA_KEY=ca-key.pem"
       #- "CA_KEY_SIZE=8192‬"
       #- "CA_CERT_PEM=ca.pem"
