@@ -69,3 +69,50 @@ Customize the certs using the following Environment Variables:
 __[1] If file already exists will re-use.__
 
 __[2] If `CLIENT_DNS` or `CLIENT_IP` is set will add `CLIENT_SUBJECT` to alternative hostname list__
+
+Usage with Traefik
+--------------
+The following traefik config in TOML format enforces a client cert issues by ca.crt for all TLS endpoints.
+```
+[tls]
+  [tls.options]
+    [tls.options.default]
+      [tls.options.default.clientAuth]
+        caFiles = ["/certs/ca.crt"]
+        clientAuthType = "RequireAndVerifyClientCert"
+```
+
+Deploy using docker-compose
+--------------
+Example docker-compose file. Remove line comments for advanced usage options.
+```
+version: "3.3"
+
+services:
+  client-ca:
+    image: cschlipp/client-cert-ca
+    container_name: Client-CA
+    volumes:
+      - ./certs:/certs
+    restart: "no"
+    network_mode: "none"
+    #environment:
+      #- "CA_KEY=ca-key.pem"
+      #- "CA_KEY_SIZE=8192‬"
+      #- "CA_CERT_PEM=ca.pem"
+      #- "CA_CERT_CRT=ca.crt"
+      #- "CA_CRT_FORMAT=pem"
+      #- "CA_SUBJECT=client-auth-ca"
+      #- "CA_EXPIRE=1825"
+      #- "SSL_CONFIG=openssl.cnf"
+      #- "CLIENT_KEY=client-key.pem"
+      #- "CLIENT_CSR=client-csr.csr"
+      #- "CLIENT_CERT=client-cert.pem"
+      #- "CLIENT_P12=client-cert-p12"
+      #- "CLIENT_PASSWD=password"
+      #- "CLIENT_KEY_SIZE=4096"
+      #- "CLIENT_EXPIRE=365"
+      #- "CLIENT_SUBJECT=example.com"
+      #- "CLIENT_DNS="
+      #- "CLIENT_IP="
+```
