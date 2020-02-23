@@ -1,6 +1,6 @@
-FROM stakater/base-alpine:3.5
+FROM alpine
 
-RUN apk --update add openssl
+RUN apk --update add bash openssl
 
 VOLUME /certs
 

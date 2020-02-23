@@ -3,9 +3,9 @@ Self Signed SSL Client Certificate Generator
 
 About
 -----
-Origin: https://github.com/stakater/dockerfile-ssl-certs-generator
+Fork of: https://github.com/stakater/dockerfile-ssl-certs-generator
 
-This is a small docker image based on `alpine linux` which allows you to create one or multiple client certificates for mutual TLS authentication.
+This is a small docker image based on `alpine` which allows you to create one or multiple client certificates for mutual TLS authentication.
 
 Default settings are suitable for usage with [Traefik](https://containo.us/traefik/). 
 ```
